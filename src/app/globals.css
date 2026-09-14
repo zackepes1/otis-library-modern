@@ -1,26 +1,312 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #121118;
+  --foreground: #e2e8f0;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-sans: var(--font-inter);
+  --font-serif: var(--font-playfair);
+  --color-brand: #4798ff;
+  --color-brand-deep: #0c2d31;
+  --color-ink: #121118;
+  --color-surface: #032026;
+  --color-forest: #1e2d11;
+  --color-olive: #385115;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 300;
+}
+
+/* Aurora wave animation for DottedGlowBackground — adapted from Aceternity
+   UI's free "Aurora Background" component (see component file for details).
+   Plain CSS (not Tailwind arbitrary values) because the comma-separated
+   `background-image: var(--a), var(--b)` value isn't reliably parsed
+   through Tailwind's bracket-notation arbitrary properties. */
+@keyframes aurora {
+  from {
+    background-position: 50% 50%, 50% 50%;
+  }
+  to {
+    background-position: 350% 50%, 350% 50%;
+  }
+}
+
+.aurora-layer {
+  position: absolute;
+  inset: -10px;
+  pointer-events: none;
+  opacity: 0.5;
+  filter: blur(10px);
+  will-change: transform;
+  background-image: var(--dark-gradient), var(--aurora);
+  background-size: 300%, 200%;
+  background-position: 50% 50%, 50% 50%;
+  animation: aurora 60s linear infinite;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, black 10%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, black 10%, transparent 70%);
+}
+
+.aurora-layer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: var(--dark-gradient), var(--aurora);
+  background-size: 200%, 100%;
+  background-attachment: fixed;
+  mix-blend-mode: difference;
+}
+
+/* Slowly rotating conic-gradient used as a subtle "glowing border" behind
+   the donate CTA panel (padding-box trick: the gradient div sits behind an
+   inset solid panel, so only a thin animated ring shows around the edge). */
+@keyframes border-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+/* Infinite horizontal ticker strip */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 40s linear infinite;
+}
+
+/* Global keyboard focus ring */
+:focus-visible {
+  outline: 2px solid #4798ff;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-serif);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+/* WordPress post content rendered via dangerouslySetInnerHTML */
+.wp-content p { margin-top: 1rem; color: #94a3b8; line-height: 1.75; }
+.wp-content p:first-child { margin-top: 0; }
+.wp-content h2 { margin-top: 2rem; font-size: 1.25rem; color: #e2e8f0; }
+.wp-content h3 { margin-top: 1.5rem; font-size: 1.1rem; color: #e2e8f0; }
+.wp-content a { color: #4798ff; }
+.wp-content a:hover { text-decoration: underline; }
+.wp-content ul, .wp-content ol { margin-top: 1rem; padding-left: 1.5rem; color: #94a3b8; }
+.wp-content ul { list-style-type: disc; }
+.wp-content ol { list-style-type: decimal; }
+.wp-content li { margin-top: 0.5rem; line-height: 1.75; }
+.wp-content img { border-radius: 0.75rem; margin-top: 1.5rem; margin-bottom: 1.5rem; max-width: 100%; }
+.wp-content blockquote { border-left: 4px solid #4798ff; padding-left: 1rem; margin-top: 1.5rem; color: #cbd5e1; font-style: italic; }
+.wp-content hr { border-color: rgba(255,255,255,0.1); margin-top: 2rem; margin-bottom: 2rem; }
+.wp-content figure { margin-top: 1.5rem; margin-bottom: 1.5rem; }
+.wp-content figcaption { margin-top: 0.5rem; font-size: 0.8rem; color: #64748b; text-align: center; }
+
+/* ─── Light theme ────────────────────────────────────────────────────────────
+   Toggled via data-theme="light" on <html> by ThemeProvider.
+   Tailwind v4's @theme inline bakes color values into utility classes at build
+   time, so we can't swap them via CSS variables — overrides target specific
+   utility class names and structural elements instead.
+   DottedGlowBackground is separately made theme-aware in its own component. */
+
+[data-theme="light"] {
+  --background: #f1f5f9;
+  --foreground: #0f172a;
+  color-scheme: light;
+}
+
+[data-theme="light"] body {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+/* Header */
+[data-theme="light"] header {
+  background: rgba(241, 245, 249, 0.97) !important;
+  border-bottom-color: rgba(33, 54, 139, 0.4) !important;
+}
+
+/* Brand color → navy in light mode */
+[data-theme="light"] .text-brand { color: #21368B !important; }
+[data-theme="light"] .hover\:text-brand:hover { color: #21368B !important; }
+[data-theme="light"] .group:hover .group-hover\:text-brand { color: #21368B !important; }
+[data-theme="light"] .border-brand { border-color: #21368B !important; }
+[data-theme="light"] .border-brand\/30 { border-color: rgba(33, 54, 139, 0.3) !important; }
+[data-theme="light"] .border-brand\/50 { border-color: rgba(33, 54, 139, 0.5) !important; }
+[data-theme="light"] .bg-brand\/10 { background-color: rgba(33, 54, 139, 0.08) !important; }
+[data-theme="light"] .bg-brand\/15 { background-color: rgba(33, 54, 139, 0.12) !important; }
+[data-theme="light"] .hover\:border-brand\/40:hover { border-color: rgba(33, 54, 139, 0.4) !important; }
+[data-theme="light"] .hover\:border-brand\/50:hover { border-color: rgba(33, 54, 139, 0.5) !important; }
+[data-theme="light"] .hover\:bg-brand\/15:hover { background-color: rgba(33, 54, 139, 0.12) !important; }
+[data-theme="light"] .focus\:border-brand\/50 { border-color: rgba(33, 54, 139, 0.5) !important; }
+[data-theme="light"] .focus\:ring-brand\/30 { --tw-ring-color: rgba(33, 54, 139, 0.3) !important; }
+[data-theme="light"] .text-brand\/60 { color: rgba(33, 54, 139, 0.6) !important; }
+
+/* Footer */
+[data-theme="light"] footer {
+  background: rgba(226, 232, 240, 0.8) !important;
+  border-top-color: rgba(15, 23, 42, 0.1) !important;
+}
+
+/* Text — most page text uses text-white or text-slate-{300,400,500} */
+[data-theme="light"] .text-white {
+  color: #1e293b !important;
+}
+[data-theme="light"] .text-slate-300 {
+  color: #334155 !important;
+}
+[data-theme="light"] .text-slate-400 {
+  color: #475569 !important;
+}
+[data-theme="light"] .text-slate-500 {
+  color: #64748b !important;
+}
+
+/* Card / panel backgrounds */
+[data-theme="light"] .bg-white\/\[0\.03\] {
+  background-color: rgba(255, 255, 255, 0.85) !important;
+}
+[data-theme="light"] .bg-white\/\[0\.06\] {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+}
+[data-theme="light"] .bg-black\/30 {
+  background-color: rgba(226, 232, 240, 0.6) !important;
+}
+
+/* Borders */
+[data-theme="light"] .border-white\/10 {
+  border-color: rgba(15, 23, 42, 0.12) !important;
+}
+[data-theme="light"] .border-white\/20 {
+  border-color: rgba(15, 23, 42, 0.2) !important;
+}
+
+/* Dividers inside lists */
+[data-theme="light"] .divide-white\/10 > * + * {
+  border-color: rgba(15, 23, 42, 0.1) !important;
+}
+
+/* Gradient backgrounds (history spotlight panel, etc.) */
+[data-theme="light"] .from-brand-deep\/40 {
+  --tw-gradient-from: rgba(33, 54, 139, 0.12) !important;
+}
+[data-theme="light"] .to-white\/\[0\.03\] {
+  --tw-gradient-to: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Header nav buttons and links */
+[data-theme="light"] header .border-white\/20 {
+  border-color: rgba(15, 23, 42, 0.2) !important;
+}
+[data-theme="light"] header .text-white,
+[data-theme="light"] header .text-slate-300,
+[data-theme="light"] header .text-slate-400 {
+  color: #1e293b !important;
+}
+
+/* Table internals (policies, board pages) */
+[data-theme="light"] .bg-white\/\[0\.04\] {
+  background-color: rgba(255, 255, 255, 0.7) !important;
+}
+[data-theme="light"] .bg-white\/\[0\.02\] {
+  background-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* CommandPalette panel */
+[data-theme="light"] .bg-\[\#121a2e\] {
+  background-color: #ffffff !important;
+}
+
+/* SidebarNav drawer */
+[data-theme="light"] .bg-ink {
+  background-color: #f1f5f9 !important;
+}
+
+/* bg-surface (PdfModal and other dark panels) */
+[data-theme="light"] .bg-surface {
+  background-color: #ffffff !important;
+}
+
+/* EventsCarousel + apple-cards-carousel: white-on-dark utilities become dark-on-light */
+[data-theme="light"] .bg-white\/5 { background-color: rgba(15, 23, 42, 0.04) !important; }
+[data-theme="light"] .bg-white\/\[0\.08\] { background-color: rgba(15, 23, 42, 0.08) !important; }
+[data-theme="light"] .bg-white\/10 { background-color: rgba(15, 23, 42, 0.07) !important; }
+[data-theme="light"] .bg-white\/30 { background-color: rgba(15, 23, 42, 0.15) !important; }
+[data-theme="light"] .hover\:bg-white\/50:hover { background-color: rgba(15, 23, 42, 0.25) !important; }
+[data-theme="light"] .hover\:bg-white\/20:hover { background-color: rgba(15, 23, 42, 0.12) !important; }
+
+/* bg-ink/60 text panel and bg-ink/80 seats badge: dark navy → light surface */
+[data-theme="light"] .bg-ink\/60 { background-color: rgba(241, 245, 249, 0.97) !important; }
+[data-theme="light"] .bg-ink\/80 { background-color: rgba(226, 232, 240, 0.98) !important; }
+
+/* "This Week's Events" label: light blue is invisible on light bg */
+[data-theme="light"] .text-blue-200 { color: #1d4ed8 !important; }
+
+/* Logo SVG has white paths — convert to #21368B navy in light mode.
+   Chain: halve brightness to get gray with sepia signal, apply sepia (yields
+   ~H39° brownish), hue-rotate to ~231° (navy range), then dial saturation and
+   final brightness to land near H228 S62% L34% (#21368B). */
+[data-theme="light"] .otis-logo {
+  filter: brightness(0.5) sepia(1) hue-rotate(193deg) saturate(2.6) brightness(0.6);
+}
+
+/* bg-brand buttons use text-ink (near-black) which reads fine on bright blue
+   in dark mode, but dark navy in light mode needs white text for contrast. */
+[data-theme="light"] .bg-brand { background-color: #21368B !important; color: #ffffff !important; }
+
+/* Borders: white/[0.07] (MarqueeStrip) and white/15 (ThingsWeLove, ThingsCarousel, NewsletterForm, ContactCard, BookCarousel) */
+[data-theme="light"] .border-white\/\[0\.07\] { border-color: rgba(15, 23, 42, 0.08) !important; }
+[data-theme="light"] .border-white\/15 { border-color: rgba(15, 23, 42, 0.15) !important; }
+
+/* Form inputs: bg-white/[0.05] generates a different selector than bg-white/5 */
+[data-theme="light"] .bg-white\/\[0\.05\] { background-color: rgba(255, 255, 255, 0.75) !important; }
+
+/* Hover overrides (calendar day cells, BookCarousel nav buttons) */
+[data-theme="light"] .hover\:bg-white\/10:hover { background-color: rgba(15, 23, 42, 0.07) !important; }
+[data-theme="light"] .hover\:border-white\/30:hover { border-color: rgba(15, 23, 42, 0.25) !important; }
+
+/* DonateSection gradient stops */
+[data-theme="light"] .from-brand-deep\/60 { --tw-gradient-from: rgba(33, 54, 139, 0.15) !important; }
+[data-theme="light"] .via-ink { --tw-gradient-via: #f8fafc !important; }
+[data-theme="light"] .to-ink { --tw-gradient-to: #f1f5f9 !important; }
+
+/* Digital Collection service logo container */
+.service-logo-wrap { background: rgba(255, 255, 255, 0.08); }
+[data-theme="light"] .service-logo-wrap { background: rgba(15, 23, 42, 0.05); }
+
+/* MegaNav viewport enter/exit animations */
+@keyframes mega-nav-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes mega-nav-out {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-6px); }
+}
+.mega-nav-viewport[data-state="open"]  { animation: mega-nav-in  150ms ease forwards; }
+.mega-nav-viewport[data-state="closed"] { animation: mega-nav-out 100ms ease forwards; }
+
+/* MegaNav light-theme overrides */
+[data-theme="light"] .mega-nav-viewport {
+  background: rgba(248, 250, 252, 0.97) !important;
+  border-color: rgba(15, 23, 42, 0.12) !important;
 }
