@@ -1,8 +1,7 @@
 import Stripe from "stripe";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-
 export async function POST(request: Request) {
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
   const { amount, recurring, name, email } = await request.json();
 
   if (!amount || amount < 1) {
