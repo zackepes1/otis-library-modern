@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import * as cheerio from "cheerio";
+import type { AnyNode } from "domhandler";
 import { IconArrowLeft } from "@tabler/icons-react";
 import { fetchSnippets, fetchSnippetBySlug } from "@/lib/snippets";
 
@@ -51,7 +52,7 @@ function resolveImgSrc($img: ReturnType<ReturnType<typeof cheerio.load>>): strin
 function parseWpContent(html: string): ContentBlock[] {
   const $ = cheerio.load(html);
   const blocks: ContentBlock[] = [];
-  const handledImgs = new Set<cheerio.Element>();
+  const handledImgs = new Set<AnyNode>();
 
   // Select all content elements at any nesting depth (Gutenberg wraps blocks in divs).
   // Iterate in document order; skip elements nested inside list items to avoid duplicates.
@@ -66,7 +67,7 @@ function parseWpContent(html: string): ContentBlock[] {
       if (!imgEl.length) return;
       const src = resolveImgSrc(imgEl);
       if (!src) return;
-      handledImgs.add(imgEl[0] as unknown as cheerio.Element);
+      handledImgs.add(imgEl[0] as unknown as AnyNode);
       blocks.push({
         type: "img",
         src,
@@ -78,7 +79,7 @@ function parseWpContent(html: string): ContentBlock[] {
 
     // Standalone img (not inside a figure)
     if (el.name === "img") {
-      if (handledImgs.has(el as unknown as cheerio.Element)) return;
+      if (handledImgs.has(el as unknown as AnyNode)) return;
       const src = resolveImgSrc($el);
       if (!src) return;
       blocks.push({ type: "img", src, alt: $el.attr("alt") ?? "" });

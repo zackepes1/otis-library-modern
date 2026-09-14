@@ -442,7 +442,7 @@ class Media {
 class App {
   container: HTMLElement;
   scrollSpeed: number;
-  scroll: { ease: number; current: number; target: number; last: number };
+  scroll: { ease: number; current: number; target: number; last: number; position: number };
   onCheckDebounce: () => void;
   renderer!: Renderer;
   gl!: OGLRenderingContext;
@@ -456,11 +456,11 @@ class App {
   screen!: { width: number; height: number };
   viewport!: { width: number; height: number };
   raf!: number;
-  boundOnResize: () => void;
-  boundOnWheel: (e: WheelEvent) => void;
-  boundOnTouchDown: (e: MouseEvent | TouchEvent) => void;
-  boundOnTouchMove: (e: MouseEvent | TouchEvent) => void;
-  boundOnTouchUp: () => void;
+  boundOnResize!: () => void;
+  boundOnWheel!: (e: WheelEvent) => void;
+  boundOnTouchDown!: (e: MouseEvent | TouchEvent) => void;
+  boundOnTouchMove!: (e: MouseEvent | TouchEvent) => void;
+  boundOnTouchUp!: () => void;
 
   constructor(
     container: HTMLElement,
@@ -484,7 +484,7 @@ class App {
   ) {
     this.container = container;
     this.scrollSpeed = scrollSpeed;
-    this.scroll = { ease: scrollEase, current: 0, target: 0, last: 0 };
+    this.scroll = { ease: scrollEase, current: 0, target: 0, last: 0, position: 0 };
     this.onCheckDebounce = debounce(this.onCheck.bind(this), 200);
 
     autoBind(this);

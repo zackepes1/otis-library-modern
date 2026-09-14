@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { motion, useScroll, useTransform } from "motion/react";
+import { motion, useScroll, useTransform, type Variants } from "motion/react";
 import { audiences, historySpotlight, quickLinks } from "@/lib/site-data";
 import StaggerGrid from "@/components/motion/StaggerGrid";
 import StaggerItem from "@/components/motion/StaggerItem";
@@ -24,12 +24,12 @@ const CATALOG_CARD = {
   external: true,
 };
 
-const wordVariants = {
+const wordVariants: Variants = {
   hidden: { opacity: 0, y: 10 },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1], delay: 0.1 + i * 0.07 },
+    transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] as [number, number, number, number], delay: 0.1 + i * 0.07 },
   }),
 };
 
